@@ -9,25 +9,33 @@ import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
-    text: '#000000',
+    text: '#1D1D1F',
     background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-    border: '#E0E1E6',
-    primary: '#E63B2E',
+    backgroundElement: '#FFF3E0',
+    backgroundSelected: '#F6E2C4',
+    textSecondary: '#55555B',
+    border: '#E8DCC8',
+    primary: '#D95F00',
     onPrimary: '#ffffff',
   },
   dark: {
     text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-    border: '#2E3135',
-    primary: '#FF5A4D',
+    background: '#1D1D1F',
+    backgroundElement: '#2A2A2D',
+    backgroundSelected: '#3A3A3E',
+    textSecondary: '#C9C9CE',
+    border: '#3A3A3E',
+    primary: '#F07A1A',
     onPrimary: '#ffffff',
   },
+} as const;
+
+/** Loaded in the root layout. Each weight is its own family, so don't combine these with `fontWeight`. */
+export const BrandFonts = {
+  title: 'Fredoka_700Bold',
+  titleMedium: 'Fredoka_500Medium',
+  body: 'Nunito_400Regular',
+  bodyBold: 'Nunito_700Bold',
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;

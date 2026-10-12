@@ -4,10 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CartBar } from '@/components/cart-bar';
 import { EmptyState } from '@/components/empty-state';
+import { Logo } from '@/components/logo';
 import { RestaurantCard } from '@/components/restaurant-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { BrandFonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { user } from '@/constants/user';
 import { categories, restaurants, type Restaurant } from '@/data/restaurants';
 import { useTheme } from '@/hooks/use-theme';
@@ -47,6 +48,8 @@ export default function HomeScreen() {
           keyboardShouldPersistTaps="handled"
           ListHeaderComponent={
             <View style={styles.header}>
+              <Logo />
+
               <View>
                 <ThemedText type="small" themeColor="textSecondary">
                   Entregar en
@@ -139,6 +142,7 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.three,
     paddingHorizontal: Spacing.three,
     fontSize: 16,
+    fontFamily: BrandFonts.body,
   },
   categories: {
     gap: Spacing.two,

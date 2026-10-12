@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { BrandFonts, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 type QuantityStepperProps = {
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   symbol: {
     fontSize: 20,
     lineHeight: 24,
-    fontWeight: 700,
+    fontFamily: BrandFonts.bodyBold,
   },
   quantity: {
     minWidth: 20,

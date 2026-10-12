@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router/js-tabs';
 import { SymbolView } from 'expo-symbols';
 
+import { BrandFonts } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function TabLayout() {
@@ -12,6 +13,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textSecondary,
+        tabBarLabelStyle: { fontFamily: BrandFonts.bodyBold },
       }}>
       <Tabs.Screen
         name="index"
