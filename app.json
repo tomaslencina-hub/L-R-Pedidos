@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "lr-pedidos",
+    "name": "L&R Pedidos",
     "slug": "lr-pedidos",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -28,7 +28,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#E63B2E",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
