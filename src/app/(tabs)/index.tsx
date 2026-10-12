@@ -59,15 +59,15 @@ export default function HomeScreen() {
           ListHeaderComponent={
             <View style={styles.header}>
               <View style={styles.topRow}>
+                <LogoMark height={46} />
                 <View style={styles.address}>
-                  <ThemedText type="small" themeColor="textSecondary">
+                  <ThemedText type="small" themeColor="textSecondary" style={styles.addressText}>
                     Te lo llevamos a
                   </ThemedText>
-                  <ThemedText type="smallBold" numberOfLines={1}>
+                  <ThemedText type="smallBold" numberOfLines={1} style={styles.addressText}>
                     📍 {user.address}
                   </ThemedText>
                 </View>
-                <LogoMark height={46} />
               </View>
 
               <Text style={[styles.headline, { color: theme.text }]}>
@@ -163,6 +163,9 @@ const styles = StyleSheet.create({
   },
   address: {
     flex: 1,
+  },
+  addressText: {
+    textAlign: 'right',
   },
   headline: {
     fontFamily: BrandFonts.title,
