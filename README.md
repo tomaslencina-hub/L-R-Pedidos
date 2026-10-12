@@ -21,8 +21,6 @@ npx expo start
 
 Desde la terminal de Expo se puede abrir en un emulador de Android, en el simulador de iOS, en el navegador (`w`) o escaneando el QR con la app Expo Go.
 
-> En Windows, la carpeta del proyecto no puede tener `&` en la ruta: rompe `npx` y `npm run`.
-
 ## Estructura
 
 ```
