@@ -1,9 +1,9 @@
-import { Link } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Block } from '@/components/block';
+import { Tag } from '@/components/tag';
+import { BrandFonts, Colors, Ink, Spacing } from '@/constants/theme';
 import type { Restaurant } from '@/data/restaurants';
 import { formatPrice } from '@/utils/format';
 
@@ -11,57 +11,52 @@ export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
   const [minTime, maxTime] = restaurant.deliveryTime;
 
   return (
-    <Link href={{ pathname: '/restaurant/[id]', params: { id: restaurant.id } }} asChild>
-      <Pressable style={({ pressed }) => pressed && styles.pressed}>
-        <ThemedView type="backgroundElement" style={styles.card}>
-          <View style={[styles.cover, { backgroundColor: restaurant.color }]}>
-            <ThemedText style={styles.emoji}>{restaurant.emoji}</ThemedText>
-          </View>
-          <View style={styles.info}>
-            <View style={styles.titleRow}>
-              <ThemedText type="smallBold" style={styles.name} numberOfLines={1}>
-                {restaurant.name}
-              </ThemedText>
-              <ThemedText type="smallBold">★ {restaurant.rating.toFixed(1)}</ThemedText>
-            </View>
-            <ThemedText type="small" themeColor="textSecondary">
-              {minTime}-{maxTime} min · Envío {formatPrice(restaurant.deliveryFee)}
-            </ThemedText>
-          </View>
-        </ThemedView>
-      </Pressable>
-    </Link>
+    <Block
+      color={restaurant.color}
+      radius={24}
+      accessibilityRole="button"
+      accessibilityLabel={restaurant.name}
+      onPress={() => router.push({ pathname: '/restaurant/[id]', params: { id: restaurant.id } })}
+      contentStyle={styles.card}>
+      <Text style={styles.emoji}>{restaurant.emoji}</Text>
+      <Text style={styles.name} numberOfLines={2}>
+        {restaurant.name}
+      </Text>
+      <View style={styles.tags}>
+        <Tag label={`★ ${restaurant.rating.toFixed(1)}`} color={Colors.light.accent} />
+        <Tag label={`${minTime}-${maxTime} min`} />
+        <Tag label={`Envío ${formatPrice(restaurant.deliveryFee)}`} />
+      </View>
+    </Block>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Spacing.three,
-    overflow: 'hidden',
-  },
-  cover: {
-    height: 120,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emoji: {
-    fontSize: 56,
-    lineHeight: 68,
-  },
-  info: {
+    minHeight: 136,
+    justifyContent: 'space-between',
+    gap: Spacing.three,
     padding: Spacing.three,
-    gap: Spacing.half,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.two,
+  // Oversized and half out of the card, like a sticker
+  emoji: {
+    position: 'absolute',
+    right: -10,
+    top: 4,
+    fontSize: 92,
+    lineHeight: 112,
+    transform: [{ rotate: '-12deg' }],
   },
   name: {
-    flex: 1,
-    fontSize: 16,
+    maxWidth: '62%',
+    fontFamily: BrandFonts.title,
+    fontSize: 24,
+    lineHeight: 28,
+    color: Ink,
   },
-  pressed: {
-    opacity: 0.8,
+  tags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.one + Spacing.half,
   },
 });

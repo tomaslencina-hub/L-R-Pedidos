@@ -22,6 +22,8 @@ export const paymentMethodLabels: Record<PaymentMethod, string> = {
   card: 'Tarjeta al recibir',
 };
 
+export const paymentMethodEmojis: Record<PaymentMethod, string> = { cash: '💵', card: '💳' };
+
 export const orderSteps = ['Confirmado', 'En preparación', 'En camino', 'Entregado'] as const;
 
 // There is no backend yet: the status advances on its own so the tracking screen can be tried out.

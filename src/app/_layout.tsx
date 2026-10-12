@@ -58,10 +58,11 @@ export default function RootLayout() {
             screenOptions={{
               headerBackTitle: 'Volver',
               headerTitleStyle: { fontFamily: BrandFonts.title },
+              headerShadowVisible: false,
             }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="restaurant/[id]" options={{ title: '' }} />
-            <Stack.Screen name="cart" options={{ title: 'Tu pedido' }} />
+            <Stack.Screen name="cart" options={{ title: 'Tu bolsa' }} />
             <Stack.Screen name="order/[id]" options={{ title: 'Seguimiento' }} />
           </Stack>
         </CartProvider>

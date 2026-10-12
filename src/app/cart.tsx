@@ -1,17 +1,24 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Block } from '@/components/block';
 import { EmptyState } from '@/components/empty-state';
 import { PrimaryButton } from '@/components/primary-button';
 import { QuantityStepper } from '@/components/quantity-stepper';
+import { DashedLine, ReceiptRow } from '@/components/receipt';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { BrandFonts, Ink, MaxContentWidth, Spacing } from '@/constants/theme';
 import { user } from '@/constants/user';
 import { useCart } from '@/context/cart';
-import { paymentMethodLabels, useOrders, type PaymentMethod } from '@/context/orders';
+import {
+  paymentMethodEmojis,
+  paymentMethodLabels,
+  useOrders,
+  type PaymentMethod,
+} from '@/context/orders';
 import { getRestaurant } from '@/data/restaurants';
 import { useTheme } from '@/hooks/use-theme';
 import { formatPrice } from '@/utils/format';
@@ -30,9 +37,9 @@ export default function CartScreen() {
     return (
       <ThemedView style={styles.container}>
         <EmptyState
-          emoji="🛒"
-          title="Tu carrito está vacío"
-          message="Agregá productos de un local para hacer tu pedido.">
+          emoji="🛍️"
+          title="Tu bolsa está vacía"
+          message="Sumá algo rico de un local y volvé por acá.">
           <View style={styles.emptyAction}>
             <PrimaryButton label="Ver locales" onPress={() => router.dismissTo('/')} />
           </View>
@@ -61,14 +68,32 @@ export default function CartScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.content}>
-        <ScrollView contentContainerStyle={styles.scroll}>
-          <ThemedText type="subtitle">{restaurant.name}</ThemedText>
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+          <Block contentStyle={styles.receipt}>
+            <View style={styles.receiptHeader}>
+              <View
+                style={[
+                  styles.restaurantTile,
+                  { backgroundColor: restaurant.color, borderColor: theme.outline },
+                ]}>
+                <Text style={styles.restaurantEmoji}>{restaurant.emoji}</Text>
+              </View>
+              <View style={styles.flex}>
+                <ThemedText type="small" themeColor="textSecondary">
+                  Tu pedido de
+                </ThemedText>
+                <ThemedText type="subtitle">{restaurant.name}</ThemedText>
+              </View>
+            </View>
 
-          <View>
+            <DashedLine />
+
             {cart.lines.map(({ product, quantity }) => (
-              <View key={product.id} style={[styles.line, { borderBottomColor: theme.border }]}>
-                <View style={styles.lineInfo}>
-                  <ThemedText type="smallBold">{product.name}</ThemedText>
+              <View key={product.id} style={styles.line}>
+                <View style={styles.flex}>
+                  <ThemedText type="smallBold" style={styles.lineName}>
+                    {product.name}
+                  </ThemedText>
                   <ThemedText type="small" themeColor="textSecondary">
                     {formatPrice(product.price * quantity)}
                   </ThemedText>
@@ -80,44 +105,45 @@ export default function CartScreen() {
                 />
               </View>
             ))}
+
+            <DashedLine />
+
+            <ReceiptRow label="Subtotal" value={formatPrice(cart.subtotal)} />
+            <ReceiptRow label="Envío" value={formatPrice(restaurant.deliveryFee)} />
+            <ReceiptRow label="Total" value={formatPrice(total)} strong />
+          </Block>
+
+          <View style={styles.section}>
+            <ThemedText type="subtitle">¿A dónde va?</ThemedText>
+            <Block contentStyle={styles.address}>
+              <ThemedText>📍 {user.address}</ThemedText>
+            </Block>
           </View>
 
-          <ThemedView type="backgroundElement" style={styles.card}>
-            <ThemedText type="smallBold">Entregar en</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary">
-              📍 {user.address}
-            </ThemedText>
-          </ThemedView>
-
-          <ThemedView type="backgroundElement" style={styles.card}>
-            <ThemedText type="smallBold">Medio de pago</ThemedText>
+          <View style={styles.section}>
+            <ThemedText type="subtitle">¿Cómo pagás?</ThemedText>
             <View style={styles.paymentMethods}>
               {paymentMethods.map((method) => {
                 const selected = method === paymentMethod;
                 return (
-                  <Pressable
+                  <Block
                     key={method}
+                    color={selected ? theme.accent : undefined}
+                    depth={selected ? 4 : 2}
+                    style={styles.flex}
+                    contentStyle={styles.paymentMethod}
                     accessibilityRole="radio"
                     accessibilityState={{ selected }}
-                    onPress={() => setPaymentMethod(method)}
-                    style={[
-                      styles.paymentMethod,
-                      { borderColor: selected ? theme.primary : theme.border },
-                    ]}>
-                    <ThemedText type="small" themeColor={selected ? 'primary' : 'text'}>
+                    onPress={() => setPaymentMethod(method)}>
+                    <Text style={styles.paymentEmoji}>{paymentMethodEmojis[method]}</Text>
+                    <Text style={[styles.paymentLabel, { color: selected ? Ink : theme.text }]}>
                       {paymentMethodLabels[method]}
-                    </ThemedText>
-                  </Pressable>
+                    </Text>
+                  </Block>
                 );
               })}
             </View>
-          </ThemedView>
-
-          <ThemedView type="backgroundElement" style={styles.card}>
-            <SummaryRow label="Subtotal" value={formatPrice(cart.subtotal)} />
-            <SummaryRow label="Envío" value={formatPrice(restaurant.deliveryFee)} />
-            <SummaryRow label="Total" value={formatPrice(total)} bold />
-          </ThemedView>
+          </View>
         </ScrollView>
 
         <View style={[styles.footer, { paddingBottom: Spacing.three + insets.bottom }]}>
@@ -125,19 +151,6 @@ export default function CartScreen() {
         </View>
       </View>
     </ThemedView>
-  );
-}
-
-function SummaryRow({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
-  const type = bold ? 'smallBold' : 'small';
-
-  return (
-    <View style={styles.summaryRow}>
-      <ThemedText type={type} themeColor={bold ? 'text' : 'textSecondary'}>
-        {label}
-      </ThemedText>
-      <ThemedText type={type}>{value}</ThemedText>
-    </View>
   );
 }
 
@@ -151,43 +164,71 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: MaxContentWidth,
   },
+  flex: {
+    flex: 1,
+  },
   scroll: {
     padding: Spacing.three,
-    gap: Spacing.three,
+    gap: Spacing.four,
   },
   emptyAction: {
     alignSelf: 'stretch',
     marginTop: Spacing.three,
   },
+  receipt: {
+    padding: Spacing.three,
+    gap: Spacing.three,
+  },
+  receiptHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
+  restaurantTile: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  restaurantEmoji: {
+    fontSize: 30,
+    lineHeight: 38,
+  },
   line: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
-    paddingVertical: Spacing.three,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  lineInfo: {
-    flex: 1,
+  lineName: {
+    fontSize: 16,
   },
-  card: {
-    padding: Spacing.three,
-    borderRadius: Spacing.three,
+  section: {
     gap: Spacing.two,
+  },
+  address: {
+    padding: Spacing.three,
   },
   paymentMethods: {
     flexDirection: 'row',
     gap: Spacing.two,
   },
   paymentMethod: {
-    flex: 1,
     alignItems: 'center',
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.two,
-    borderWidth: 1.5,
+    gap: Spacing.one,
+    paddingVertical: Spacing.three,
+    paddingHorizontal: Spacing.two,
   },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  paymentEmoji: {
+    fontSize: 28,
+    lineHeight: 36,
+  },
+  paymentLabel: {
+    fontFamily: BrandFonts.bodyBold,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
   },
   footer: {
     paddingHorizontal: Spacing.three,

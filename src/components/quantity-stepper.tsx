@@ -1,7 +1,6 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { BrandFonts, Spacing } from '@/constants/theme';
+import { BrandFonts, Ink, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 type QuantityStepperProps = {
@@ -13,23 +12,23 @@ type QuantityStepperProps = {
 export function QuantityStepper({ quantity, onAdd, onRemove }: QuantityStepperProps) {
   const theme = useTheme();
 
+  const addButton = (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={quantity === 0 ? 'Agregar' : 'Agregar uno'}
+      onPress={onAdd}
+      hitSlop={Spacing.two}
+      style={({ pressed }) => [
+        styles.button,
+        { backgroundColor: theme.accent, borderColor: theme.outline },
+        pressed && styles.pressed,
+      ]}>
+      <Text style={[styles.symbol, { color: Ink }]}>+</Text>
+    </Pressable>
+  );
+
   if (quantity === 0) {
-    return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Agregar"
-        onPress={onAdd}
-        hitSlop={Spacing.two}
-        style={({ pressed }) => [
-          styles.button,
-          { backgroundColor: theme.primary },
-          pressed && styles.pressed,
-        ]}>
-        <ThemedText themeColor="onPrimary" style={styles.symbol}>
-          +
-        </ThemedText>
-      </Pressable>
-    );
+    return addButton;
   }
 
   return (
@@ -41,28 +40,13 @@ export function QuantityStepper({ quantity, onAdd, onRemove }: QuantityStepperPr
         hitSlop={Spacing.two}
         style={({ pressed }) => [
           styles.button,
-          { backgroundColor: theme.backgroundSelected },
+          { backgroundColor: theme.backgroundElement, borderColor: theme.outline },
           pressed && styles.pressed,
         ]}>
-        <ThemedText style={styles.symbol}>−</ThemedText>
+        <Text style={[styles.symbol, { color: theme.text }]}>−</Text>
       </Pressable>
-      <ThemedText type="smallBold" style={styles.quantity}>
-        {quantity}
-      </ThemedText>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Agregar uno"
-        onPress={onAdd}
-        hitSlop={Spacing.two}
-        style={({ pressed }) => [
-          styles.button,
-          { backgroundColor: theme.primary },
-          pressed && styles.pressed,
-        ]}>
-        <ThemedText themeColor="onPrimary" style={styles.symbol}>
-          +
-        </ThemedText>
-      </Pressable>
+      <Text style={[styles.quantity, { color: theme.text }]}>{quantity}</Text>
+      {addButton}
     </View>
   );
 }
@@ -74,22 +58,26 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   button: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   symbol: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontFamily: BrandFonts.bodyBold,
+    fontFamily: BrandFonts.title,
+    fontSize: 22,
+    lineHeight: 26,
   },
   quantity: {
-    minWidth: 20,
+    minWidth: 18,
     textAlign: 'center',
+    fontFamily: BrandFonts.title,
+    fontSize: 18,
+    lineHeight: 24,
   },
   pressed: {
-    opacity: 0.7,
+    transform: [{ scale: 0.9 }],
   },
 });

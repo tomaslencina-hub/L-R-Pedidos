@@ -47,13 +47,13 @@ const styles = StyleSheet.create({
     fontFamily: BrandFonts.body,
   },
   title: {
-    fontSize: 28,
+    fontSize: 34,
     fontFamily: BrandFonts.title,
-    lineHeight: 34,
+    lineHeight: 38,
   },
   subtitle: {
-    fontSize: 20,
-    lineHeight: 26,
+    fontSize: 22,
+    lineHeight: 28,
     fontFamily: BrandFonts.title,
   },
   link: {

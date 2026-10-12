@@ -1,57 +1,47 @@
-import { Pressable, StyleSheet, type PressableProps } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { Block } from '@/components/block';
+import { BrandFonts, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
-type PrimaryButtonProps = Omit<PressableProps, 'style' | 'children'> & {
+type PrimaryButtonProps = {
   label: string;
   /** Shown at the right edge, e.g. the total to pay */
   detail?: string;
+  onPress: () => void;
 };
 
-export function PrimaryButton({ label, detail, ...rest }: PrimaryButtonProps) {
+export function PrimaryButton({ label, detail, onPress }: PrimaryButtonProps) {
   const theme = useTheme();
 
   return (
-    <Pressable
+    <Block
+      color={theme.primary}
+      radius={18}
       accessibilityRole="button"
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: theme.primary },
-        !detail && styles.centered,
-        pressed && styles.pressed,
-      ]}
-      {...rest}>
-      <ThemedText type="smallBold" themeColor="onPrimary" style={styles.text}>
-        {label}
-      </ThemedText>
-      {detail && (
-        <ThemedText type="smallBold" themeColor="onPrimary" style={styles.text}>
-          {detail}
-        </ThemedText>
-      )}
-    </Pressable>
+      onPress={onPress}
+      contentStyle={[styles.content, !detail && styles.centered]}>
+      <Text style={[styles.text, { color: theme.onPrimary }]}>{label}</Text>
+      {detail && <Text style={[styles.text, { color: theme.onPrimary }]}>{detail}</Text>}
+    </Block>
   );
 }
 
 const styles = StyleSheet.create({
-  button: {
+  content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.three,
-    paddingVertical: Spacing.three,
+    paddingVertical: Spacing.three - Spacing.half,
     paddingHorizontal: Spacing.four,
-    borderRadius: Spacing.three,
   },
   centered: {
     justifyContent: 'center',
   },
   text: {
-    fontSize: 16,
-  },
-  pressed: {
-    opacity: 0.8,
+    fontFamily: BrandFonts.title,
+    fontSize: 18,
+    lineHeight: 24,
   },
 });

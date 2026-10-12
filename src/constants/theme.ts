@@ -7,26 +7,38 @@ import '@/global.css';
 
 import { Platform } from 'react-native';
 
+/** Ink of the brand kit. Use it directly for text on the fixed pastel and yellow surfaces. */
+export const Ink = '#1D1D1F';
+
 export const Colors = {
   light: {
-    text: '#1D1D1F',
-    background: '#ffffff',
-    backgroundElement: '#FFF3E0',
-    backgroundSelected: '#F6E2C4',
+    text: Ink,
+    background: '#FFF3E0',
+    backgroundElement: '#ffffff',
+    backgroundSelected: '#FFE2B8',
     textSecondary: '#55555B',
     border: '#E8DCC8',
     primary: '#D95F00',
     onPrimary: '#ffffff',
+    accent: '#FFD166',
+    /** Thick borders and hard shadows of blocks */
+    outline: Ink,
+    dock: Ink,
+    onDock: '#FFF3E0',
   },
   dark: {
     text: '#ffffff',
-    background: '#1D1D1F',
+    background: Ink,
     backgroundElement: '#2A2A2D',
     backgroundSelected: '#3A3A3E',
     textSecondary: '#C9C9CE',
     border: '#3A3A3E',
     primary: '#F07A1A',
-    onPrimary: '#ffffff',
+    onPrimary: Ink,
+    accent: '#FFD166',
+    outline: '#FFF3E0',
+    dock: '#2A2A2D',
+    onDock: '#FFF3E0',
   },
 } as const;
 
@@ -75,5 +87,6 @@ export const Spacing = {
   six: 64,
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+/** Height of the floating dock that replaces the tab bar */
+export const DockHeight = 64;
+export const MaxContentWidth = 520;

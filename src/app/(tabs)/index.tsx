@@ -1,17 +1,25 @@
 import { useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { CartBar } from '@/components/cart-bar';
+import { Block } from '@/components/block';
+import { useDockInset } from '@/components/dock';
 import { EmptyState } from '@/components/empty-state';
-import { Logo } from '@/components/logo';
+import { LogoMark } from '@/components/logo';
 import { RestaurantCard } from '@/components/restaurant-card';
+import { Tag } from '@/components/tag';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { BrandFonts, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BrandFonts, Ink, MaxContentWidth, Spacing } from '@/constants/theme';
 import { user } from '@/constants/user';
 import { categories, restaurants, type Restaurant } from '@/data/restaurants';
 import { useTheme } from '@/hooks/use-theme';
+
+const CATEGORY_COLUMNS = 3;
+const categoryRows = Array.from(
+  { length: Math.ceil(categories.length / CATEGORY_COLUMNS) },
+  (_, row) => categories.slice(row * CATEGORY_COLUMNS, (row + 1) * CATEGORY_COLUMNS),
+);
 
 function matchesSearch(restaurant: Restaurant, search: string) {
   const query = search.trim().toLowerCase();
@@ -28,6 +36,7 @@ function matchesSearch(restaurant: Restaurant, search: string) {
 
 export default function HomeScreen() {
   const theme = useTheme();
+  const dockInset = useDockInset();
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState<string | null>(null);
 
@@ -44,74 +53,87 @@ export default function HomeScreen() {
           data={results}
           keyExtractor={(restaurant) => restaurant.id}
           renderItem={({ item }) => <RestaurantCard restaurant={item} />}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[styles.list, { paddingBottom: dockInset }]}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <View style={styles.header}>
-              <Logo />
-
-              <View>
-                <ThemedText type="small" themeColor="textSecondary">
-                  Entregar en
-                </ThemedText>
-                <ThemedText type="smallBold" style={styles.address}>
-                  📍 {user.address}
-                </ThemedText>
+              <View style={styles.topRow}>
+                <View style={styles.address}>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    Te lo llevamos a
+                  </ThemedText>
+                  <ThemedText type="smallBold" numberOfLines={1}>
+                    📍 {user.address}
+                  </ThemedText>
+                </View>
+                <LogoMark height={46} />
               </View>
 
-              <TextInput
-                value={search}
-                onChangeText={setSearch}
-                placeholder="Buscar locales y platos"
-                placeholderTextColor={theme.textSecondary}
-                returnKeyType="search"
-                clearButtonMode="while-editing"
-                style={[
-                  styles.search,
-                  { backgroundColor: theme.backgroundElement, color: theme.text },
-                ]}
-              />
+              <Text style={[styles.headline, { color: theme.text }]}>
+                ¿Qué pedimos{'\n'}
+                <Text style={{ color: theme.primary }}>hoy?</Text>
+              </Text>
 
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.categories}>
-                {categories.map((category) => {
-                  const selected = category.id === categoryId;
-                  return (
-                    <Pressable
-                      key={category.id}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected }}
-                      onPress={() => setCategoryId(selected ? null : category.id)}>
-                      <ThemedView
-                        type="backgroundElement"
-                        style={[
-                          styles.category,
-                          selected && { backgroundColor: theme.primary },
-                        ]}>
-                        <ThemedText style={styles.categoryEmoji}>{category.emoji}</ThemedText>
-                        <ThemedText type="small" themeColor={selected ? 'onPrimary' : 'text'}>
-                          {category.name}
-                        </ThemedText>
-                      </ThemedView>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
+              <Block radius={18}>
+                <TextInput
+                  value={search}
+                  onChangeText={setSearch}
+                  placeholder="Buscá un local o un plato"
+                  placeholderTextColor={theme.textSecondary}
+                  returnKeyType="search"
+                  clearButtonMode="while-editing"
+                  style={[styles.search, { color: theme.text }]}
+                />
+              </Block>
 
-              <ThemedText type="subtitle">Locales</ThemedText>
+              <View style={styles.categories}>
+                {categoryRows.map((row, index) => (
+                  <View key={index} style={styles.categoryRow}>
+                    {row.map((category) => {
+                      const selected = category.id === categoryId;
+                      return (
+                        <Block
+                          key={category.id}
+                          color={selected ? theme.primary : category.color}
+                          radius={18}
+                          depth={3}
+                          style={styles.category}
+                          contentStyle={styles.categoryFace}
+                          accessibilityRole="button"
+                          accessibilityLabel={category.name}
+                          accessibilityState={{ selected }}
+                          onPress={() => setCategoryId(selected ? null : category.id)}>
+                          <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+                          <Text
+                            style={[
+                              styles.categoryName,
+                              { color: selected ? theme.onPrimary : Ink },
+                            ]}
+                            numberOfLines={1}>
+                            {category.name}
+                          </Text>
+                        </Block>
+                      );
+                    })}
+                  </View>
+                ))}
+              </View>
+
+              <View style={styles.sectionTitle}>
+                <ThemedText type="subtitle">Locales cerca tuyo</ThemedText>
+                <Tag label={String(results.length)} color={theme.accent} />
+              </View>
             </View>
           }
           ListEmptyComponent={
             <EmptyState
               emoji="🔍"
-              title="Sin resultados"
-              message="Probá con otra búsqueda o categoría."
+              title="Nada por acá"
+              message="Probá con otra búsqueda o con otro antojo."
             />
           }
         />
-        <CartBar />
       </SafeAreaView>
     </ThemedView>
   );
@@ -134,12 +156,21 @@ const styles = StyleSheet.create({
   header: {
     gap: Spacing.three,
   },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
   address: {
-    fontSize: 16,
+    flex: 1,
+  },
+  headline: {
+    fontFamily: BrandFonts.title,
+    fontSize: 44,
+    lineHeight: 46,
   },
   search: {
-    height: 48,
-    borderRadius: Spacing.three,
+    height: 52,
     paddingHorizontal: Spacing.three,
     fontSize: 16,
     fontFamily: BrandFonts.body,
@@ -147,15 +178,32 @@ const styles = StyleSheet.create({
   categories: {
     gap: Spacing.two,
   },
+  categoryRow: {
+    flexDirection: 'row',
+    gap: Spacing.two,
+  },
   category: {
+    flex: 1,
+  },
+  categoryFace: {
     alignItems: 'center',
-    gap: Spacing.one,
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.three,
+    gap: Spacing.half,
+    paddingVertical: Spacing.two + Spacing.half,
+    paddingHorizontal: Spacing.one,
   },
   categoryEmoji: {
-    fontSize: 28,
-    lineHeight: 34,
+    fontSize: 30,
+    lineHeight: 38,
+  },
+  categoryName: {
+    fontFamily: BrandFonts.bodyBold,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  sectionTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    marginTop: Spacing.two,
   },
 });

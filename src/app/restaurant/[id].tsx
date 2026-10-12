@@ -1,13 +1,15 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { SectionList, StyleSheet, View } from 'react-native';
+import { SectionList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { Block } from '@/components/block';
 import { CartBar } from '@/components/cart-bar';
 import { EmptyState } from '@/components/empty-state';
 import { QuantityStepper } from '@/components/quantity-stepper';
+import { Tag } from '@/components/tag';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { BrandFonts, Colors, Ink, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useCart } from '@/context/cart';
 import { getRestaurant, type Product } from '@/data/restaurants';
 import { useTheme } from '@/hooks/use-theme';
@@ -34,8 +36,8 @@ export default function RestaurantScreen() {
   function addProduct(product: Product) {
     if (cart.restaurantId && cart.restaurantId !== restaurant!.id) {
       confirm(
-        '¿Empezar un pedido nuevo?',
-        'Tu carrito tiene productos de otro local. Si seguís, se vacía.',
+        '¿Empezar una bolsa nueva?',
+        'Tu bolsa tiene productos de otro local. Si seguís, se vacía.',
         () => cart.add(restaurant!.id, product),
       );
       return;
@@ -45,23 +47,33 @@ export default function RestaurantScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <Stack.Screen options={{ title: restaurant.name }} />
+      <Stack.Screen
+        options={{
+          title: '',
+          headerStyle: { backgroundColor: restaurant.color },
+          headerTintColor: Ink,
+        }}
+      />
       <View style={styles.content}>
         <SectionList
           sections={restaurant.menu}
           keyExtractor={(product) => product.id}
           stickySectionHeadersEnabled={false}
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.list}
           ListHeaderComponent={
-            <View style={styles.header}>
-              <View style={[styles.cover, { backgroundColor: restaurant.color }]}>
-                <ThemedText style={styles.coverEmoji}>{restaurant.emoji}</ThemedText>
+            <View
+              style={[
+                styles.hero,
+                { backgroundColor: restaurant.color, borderBottomColor: theme.outline },
+              ]}>
+              <Text style={styles.heroEmoji}>{restaurant.emoji}</Text>
+              <Text style={styles.heroName}>{restaurant.name}</Text>
+              <View style={styles.tags}>
+                <Tag label={`★ ${restaurant.rating.toFixed(1)}`} color={Colors.light.accent} />
+                <Tag label={`${minTime}-${maxTime} min`} />
+                <Tag label={`Envío ${formatPrice(restaurant.deliveryFee)}`} />
               </View>
-              <ThemedText type="title">{restaurant.name}</ThemedText>
-              <ThemedText type="small" themeColor="textSecondary">
-                ★ {restaurant.rating.toFixed(1)} · {minTime}-{maxTime} min · Envío{' '}
-                {formatPrice(restaurant.deliveryFee)}
-              </ThemedText>
             </View>
           }
           renderSectionHeader={({ section }) => (
@@ -70,23 +82,31 @@ export default function RestaurantScreen() {
             </ThemedText>
           )}
           renderItem={({ item }) => (
-            <View style={[styles.product, { borderBottomColor: theme.border }]}>
-              <ThemedText style={styles.productEmoji}>{item.emoji}</ThemedText>
+            <Block style={styles.product} contentStyle={styles.productFace}>
+              <View
+                style={[
+                  styles.productEmojiTile,
+                  { backgroundColor: restaurant.color, borderColor: theme.outline },
+                ]}>
+                <Text style={styles.productEmoji}>{item.emoji}</Text>
+              </View>
               <View style={styles.productInfo}>
-                <ThemedText type="smallBold" style={styles.productName}>
-                  {item.name}
-                </ThemedText>
+                <Text style={[styles.productName, { color: theme.text }]}>{item.name}</Text>
                 <ThemedText type="small" themeColor="textSecondary">
                   {item.description}
                 </ThemedText>
-                <ThemedText type="smallBold">{formatPrice(item.price)}</ThemedText>
+                <View style={styles.productFooter}>
+                  <Text style={[styles.productPrice, { color: theme.primary }]}>
+                    {formatPrice(item.price)}
+                  </Text>
+                  <QuantityStepper
+                    quantity={cart.restaurantId === restaurant.id ? cart.quantityOf(item.id) : 0}
+                    onAdd={() => addProduct(item)}
+                    onRemove={() => cart.remove(item.id)}
+                  />
+                </View>
               </View>
-              <QuantityStepper
-                quantity={cart.restaurantId === restaurant.id ? cart.quantityOf(item.id) : 0}
-                onAdd={() => addProduct(item)}
-                onRemove={() => cart.remove(item.id)}
-              />
-            </View>
+            </Block>
           )}
         />
         <CartBar bottomInset={insets.bottom} />
@@ -106,41 +126,81 @@ const styles = StyleSheet.create({
     maxWidth: MaxContentWidth,
   },
   list: {
+    paddingBottom: Spacing.three,
+  },
+  hero: {
+    gap: Spacing.two,
     padding: Spacing.three,
+    paddingTop: Spacing.one,
+    paddingBottom: Spacing.four,
+    borderBottomWidth: 2,
+    overflow: 'hidden',
   },
-  header: {
-    gap: Spacing.one,
+  heroEmoji: {
+    position: 'absolute',
+    right: -18,
+    bottom: -22,
+    fontSize: 132,
+    lineHeight: 160,
+    transform: [{ rotate: '-12deg' }],
   },
-  cover: {
-    height: 160,
-    borderRadius: Spacing.three,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.two,
+  heroName: {
+    maxWidth: '70%',
+    fontFamily: BrandFonts.title,
+    fontSize: 38,
+    lineHeight: 40,
+    color: Ink,
   },
-  coverEmoji: {
-    fontSize: 72,
-    lineHeight: 88,
+  tags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.one + Spacing.half,
+    maxWidth: '70%',
   },
   sectionTitle: {
     marginTop: Spacing.four,
+    marginBottom: Spacing.two,
+    marginHorizontal: Spacing.three,
   },
   product: {
+    marginHorizontal: Spacing.three,
+    marginBottom: Spacing.two + Spacing.one,
+  },
+  productFace: {
     flexDirection: 'row',
-    alignItems: 'center',
     gap: Spacing.three,
-    paddingVertical: Spacing.three,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    padding: Spacing.three - Spacing.one,
+  },
+  productEmojiTile: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   productEmoji: {
-    fontSize: 36,
-    lineHeight: 44,
+    fontSize: 34,
+    lineHeight: 42,
   },
   productInfo: {
     flex: 1,
     gap: Spacing.half,
   },
   productName: {
-    fontSize: 16,
+    fontFamily: BrandFonts.title,
+    fontSize: 18,
+    lineHeight: 22,
+  },
+  productFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: Spacing.two,
+  },
+  productPrice: {
+    fontFamily: BrandFonts.title,
+    fontSize: 18,
+    lineHeight: 24,
   },
 });

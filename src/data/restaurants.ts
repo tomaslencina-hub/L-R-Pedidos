@@ -2,6 +2,7 @@ export type Category = {
   id: string;
   name: string;
   emoji: string;
+  color: string;
 };
 
 export type Product = {
@@ -21,7 +22,7 @@ export type Restaurant = {
   id: string;
   name: string;
   emoji: string;
-  /** Background of the cover, there are no photos yet */
+  /** Fill of the restaurant's card and hero, there are no photos yet */
   color: string;
   categoryIds: string[];
   rating: number;
@@ -32,12 +33,12 @@ export type Restaurant = {
 };
 
 export const categories: Category[] = [
-  { id: 'burgers', name: 'Hamburguesas', emoji: '🍔' },
-  { id: 'pizza', name: 'Pizzas', emoji: '🍕' },
-  { id: 'empanadas', name: 'Empanadas', emoji: '🥟' },
-  { id: 'sushi', name: 'Sushi', emoji: '🍣' },
-  { id: 'ice-cream', name: 'Helados', emoji: '🍦' },
-  { id: 'coffee', name: 'Café', emoji: '☕' },
+  { id: 'burgers', name: 'Burgers', emoji: '🍔', color: '#FFC98A' },
+  { id: 'pizza', name: 'Pizzas', emoji: '🍕', color: '#FFA69E' },
+  { id: 'empanadas', name: 'Empanadas', emoji: '🥟', color: '#BFE3A1' },
+  { id: 'sushi', name: 'Sushi', emoji: '🍣', color: '#FFB3C7' },
+  { id: 'ice-cream', name: 'Helados', emoji: '🍦', color: '#A9D8FF' },
+  { id: 'coffee', name: 'Café', emoji: '☕', color: '#D9B99B' },
 ];
 
 export const restaurants: Restaurant[] = [
@@ -45,7 +46,7 @@ export const restaurants: Restaurant[] = [
     id: 'la-parrilla-burger',
     name: 'La Parrilla Burger',
     emoji: '🍔',
-    color: '#FFE3C2',
+    color: '#FFC98A',
     categoryIds: ['burgers'],
     rating: 4.7,
     deliveryTime: [25, 40],
@@ -102,7 +103,7 @@ export const restaurants: Restaurant[] = [
     id: 'don-napoli',
     name: 'Don Nápoli',
     emoji: '🍕',
-    color: '#FFD6D1',
+    color: '#FFA69E',
     categoryIds: ['pizza', 'empanadas'],
     rating: 4.5,
     deliveryTime: [30, 45],
@@ -159,7 +160,7 @@ export const restaurants: Restaurant[] = [
     id: 'el-noble-norte',
     name: 'Empanadas del Norte',
     emoji: '🥟',
-    color: '#F6E7B4',
+    color: '#BFE3A1',
     categoryIds: ['empanadas'],
     rating: 4.8,
     deliveryTime: [20, 35],
@@ -209,7 +210,7 @@ export const restaurants: Restaurant[] = [
     id: 'sakura-sushi',
     name: 'Sakura Sushi',
     emoji: '🍣',
-    color: '#FFD9E4',
+    color: '#FFB3C7',
     categoryIds: ['sushi'],
     rating: 4.6,
     deliveryTime: [40, 55],
@@ -252,7 +253,7 @@ export const restaurants: Restaurant[] = [
     id: 'heladeria-polo',
     name: 'Heladería Polo',
     emoji: '🍦',
-    color: '#D6ECFF',
+    color: '#A9D8FF',
     categoryIds: ['ice-cream'],
     rating: 4.9,
     deliveryTime: [15, 30],
@@ -295,7 +296,7 @@ export const restaurants: Restaurant[] = [
     id: 'cafe-del-centro',
     name: 'Café del Centro',
     emoji: '☕',
-    color: '#E8DCCB',
+    color: '#D9B99B',
     categoryIds: ['coffee'],
     rating: 4.4,
     deliveryTime: [15, 25],

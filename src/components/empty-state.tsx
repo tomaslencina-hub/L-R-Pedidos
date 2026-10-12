@@ -1,8 +1,10 @@
 import { type PropsWithChildren } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { Block } from '@/components/block';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 type EmptyStateProps = PropsWithChildren<{
   emoji: string;
@@ -11,9 +13,13 @@ type EmptyStateProps = PropsWithChildren<{
 }>;
 
 export function EmptyState({ emoji, title, message, children }: EmptyStateProps) {
+  const theme = useTheme();
+
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.emoji}>{emoji}</ThemedText>
+      <Block color={theme.accent} radius={28} style={styles.sticker} contentStyle={styles.face}>
+        <Text style={styles.emoji}>{emoji}</Text>
+      </Block>
       <ThemedText type="subtitle" style={styles.centered}>
         {title}
       </ThemedText>
@@ -33,9 +39,19 @@ const styles = StyleSheet.create({
     padding: Spacing.five,
     gap: Spacing.two,
   },
+  sticker: {
+    marginBottom: Spacing.three,
+    transform: [{ rotate: '-6deg' }],
+  },
+  face: {
+    width: 104,
+    height: 104,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   emoji: {
-    fontSize: 56,
-    lineHeight: 68,
+    fontSize: 52,
+    lineHeight: 64,
   },
   centered: {
     textAlign: 'center',

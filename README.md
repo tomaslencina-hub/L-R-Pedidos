@@ -6,7 +6,7 @@ App mobile de pedidos de comida a domicilio, hecha con React Native y [Expo](htt
 
 - **Inicio**: buscador, filtro por categorías y listado de locales.
 - **Local**: menú por secciones, con alta y baja de productos al carrito.
-- **Carrito**: detalle del pedido, dirección, medio de pago y total con envío.
+- **Tu bolsa** (el carrito): ticket del pedido, dirección, medio de pago y total con envío.
 - **Pedidos**: historial y seguimiento del estado de cada pedido.
 - **Perfil**: datos del usuario.
 

@@ -6,7 +6,7 @@ import { Spacing } from '@/constants/theme';
 import { useCart } from '@/context/cart';
 import { formatPrice } from '@/utils/format';
 
-/** Shortcut to the cart, only rendered while it has products. */
+/** Shortcut to the bag for screens without the dock, only rendered while it has products. */
 export function CartBar({ bottomInset = 0 }: { bottomInset?: number }) {
   const cart = useCart();
 
@@ -17,7 +17,7 @@ export function CartBar({ bottomInset = 0 }: { bottomInset?: number }) {
   return (
     <View style={[styles.container, { paddingBottom: Spacing.three + bottomInset }]}>
       <PrimaryButton
-        label={`Ver carrito (${cart.count})`}
+        label={`Ver mi bolsa (${cart.count})`}
         detail={formatPrice(cart.subtotal)}
         onPress={() => router.push('/cart')}
       />
